@@ -38,12 +38,37 @@ function dumpText() {
     htem.className = htext;
   }
 
-  var h = [];
+  return GetElementsPerformanceCriteria();
+}
+
+function GetElementsPerformanceCriteria() {
+  var eles = [];
+  var elements_and_performance_criteria = document.querySelectorAll(
+    ".elements_and_performance_criteria + .ait-table tr:not(:first-child) [class*=ait]"
+  );
+  for (let item of elements_and_performance_criteria) {
+    if (item.children.length === 0 && item.tagName.toLowerCase() === "p") {
+      eles.push(item.outerText);
+    }
+
+    if (
+      item.children.length > 0 &&
+      item.children[0].tagName.toLowerCase() === "span"
+    ) {
+      eles.push(item.outerText);
+    }
+  }
+
+  return eles.join("\r\n");
+}
+
+function getOtherText() {
+  var texts = [];
   // var list = document.getElementsByClassName("ait4");
   var list = document.querySelectorAll("[class*=ait]");
   for (let item of list) {
-    h.push(item.outerText);
+    texts.push(item.outerText);
   }
 
-  return h.join("\r\n");
+  return texts.join("\r\n");
 }
