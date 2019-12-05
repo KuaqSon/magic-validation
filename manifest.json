@@ -1,0 +1,13 @@
+{
+  "manifest_version": 2,
+  "name": "Magic Map Vailidate",
+  "version": "0.1",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "<all_urls>"
+  ],
+  "browser_action": {
+    "default_popup": "index.html"
+  }
+}
