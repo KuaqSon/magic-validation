@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(function(cmd, sender, sendResponse) {
     case "dumpText":
       console.log("dumpText");
       var text = dumpText();
-      console.log("TCL: text", text);
+      console.log(text);
       sendResponse(text);
       break;
     default:
@@ -38,7 +38,10 @@ function dumpText() {
     htem.className = htext;
   }
 
-  return GetElementsPerformanceCriteria();
+  const ele = GetElementsPerformanceCriteria();
+  const skill = GetFoundationSkills();
+
+  return ele + "\r\n----------------------\r\n" + skill;
 }
 
 function GetElementsPerformanceCriteria() {
@@ -59,7 +62,45 @@ function GetElementsPerformanceCriteria() {
     }
   }
 
+  eles = ["ELEMENTS AND PERFORMANCE CRITERIA"].concat(eles);
   return eles.join("\r\n");
+}
+
+function GetFoundationSkills() {
+  var skills = [];
+  var foundation_skills = document.querySelector(".foundation_skills");
+  var next = foundation_skills.nextElementSibling;
+  while (next && next.nodeType === 1 && next.tagName.toLowerCase() !== "h2") {
+    if (
+      next.tagName.toLowerCase() === "p" &&
+      next.className.toLowerCase().indexOf("ait") > 0
+    ) {
+      skills.push(next.outerText);
+    } else if (
+      next.tagName.toLowerCase() === "table" &&
+      next.className.toLowerCase() === "ait-table"
+    ) {
+      skills = [];
+      var table = next.querySelectorAll("tr:not(:first-child) [class*=ait]");
+      for (let item of table) {
+        if (item.children.length === 0 && item.tagName.toLowerCase() === "p") {
+          skills.push(item.outerText);
+        }
+
+        if (
+          item.children.length > 0 &&
+          (item.children[0].tagName.toLowerCase() === "span" ||
+            item.tagName.toLowerCase() === "ul")
+        ) {
+          skills.push(item.outerText);
+        }
+      }
+    }
+
+    next = next.nextElementSibling;
+  }
+  skills = ["FOUNDATION SKILLS"].concat(skills);
+  return skills.join("\r\n");
 }
 
 function getOtherText() {
