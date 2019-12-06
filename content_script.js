@@ -38,13 +38,21 @@ function dumpText() {
     htem.className = htext;
   }
 
-  const ele = GetElementsPerformanceCriteria();
-  const skill = GetFoundationSkills();
-
-  return ele + "\r\n----------------------\r\n" + skill;
+  const ele = getElementsPerformanceCriteria();
+  const skill = getFoundationSkills();
+  const performance_evidence = getPerformanceEvidence();
+  const knowledge_evidence = getKnowledgeEvidence();
+  const assessment_conditions = getAssessmentConditions();
+  return [
+    ele,
+    skill,
+    performance_evidence,
+    knowledge_evidence,
+    assessment_conditions
+  ].join("\r\n----------------------\r\n");
 }
 
-function GetElementsPerformanceCriteria() {
+function getElementsPerformanceCriteria() {
   var eles = [];
   var elements_and_performance_criteria = document.querySelectorAll(
     ".elements_and_performance_criteria + .ait-table tr:not(:first-child) [class*=ait]"
@@ -66,19 +74,21 @@ function GetElementsPerformanceCriteria() {
   return eles.join("\r\n");
 }
 
-function GetFoundationSkills() {
+function getFoundationSkills() {
   var skills = [];
   var foundation_skills = document.querySelector(".foundation_skills");
   var next = foundation_skills.nextElementSibling;
-  while (next && next.nodeType === 1 && next.tagName.toLowerCase() !== "h2") {
-    if (
-      next.tagName.toLowerCase() === "p" &&
-      next.className.toLowerCase().indexOf("ait") > 0
-    ) {
+  while (
+    next &&
+    next.nodeType === 1 &&
+    next.className.toLowerCase().indexOf("ait") !== 1 &&
+    next.tagName.toLowerCase() !== "h2"
+  ) {
+    if (next.tagName.toLowerCase() === "p") {
       skills.push(next.outerText);
     } else if (
       next.tagName.toLowerCase() === "table" &&
-      next.className.toLowerCase() === "ait-table"
+      next.className.toLowerCase().indexOf("ait-table") !== -1
     ) {
       skills = [];
       var table = next.querySelectorAll("tr:not(:first-child) [class*=ait]");
@@ -101,6 +111,62 @@ function GetFoundationSkills() {
   }
   skills = ["FOUNDATION SKILLS"].concat(skills);
   return skills.join("\r\n");
+}
+
+function getPerformanceEvidence() {
+  var pers = getContentLevelType(".performance_evidence");
+  pers = ["PERFORMANCE EVIDENCE"].concat(pers);
+  return pers.join("\r\n");
+}
+
+function getKnowledgeEvidence() {
+  var pers = getContentLevelType(".knowledge_evidence");
+  pers = ["KNOWLEDGE EVIDENCE"].concat(pers);
+  return pers.join("\r\n");
+}
+
+function getAssessmentConditions() {
+  var pers = getContentLevelType(".assessment_conditions");
+  pers = ["ASSESSMENT CONDITIONS"].concat(pers);
+  return pers.join("\r\n");
+}
+
+function getContentLevelType(selector) {
+  var pers = [];
+  var performance_evidence = document.querySelector(selector);
+  var next = performance_evidence.nextElementSibling;
+  var level = 0;
+  var levelDash = "";
+  while (
+    next &&
+    next.nodeType === 1 &&
+    next.className.toLowerCase().indexOf("ait") !== -1 &&
+    next.tagName.toLowerCase() !== "h2"
+  ) {
+    if (next.tagName.toLowerCase() === "p") {
+      pers.push(next.outerText);
+    } else if (next.tagName.toLowerCase() === "ul") {
+      var ulLevel = Number(next.className.trim().replace("ait", ""));
+      if (ulLevel > level) {
+        level = ulLevel;
+        levelDash = levelDash + "-";
+      }
+
+      if (ulLevel < level) {
+        level = ulLevel;
+        levelDash = levelDash.substring(1);
+      }
+
+      var lis = next.querySelectorAll("li");
+      for (let item of lis) {
+        pers.push(levelDash + item.outerText);
+      }
+    }
+
+    next = next.nextElementSibling;
+  }
+
+  return pers;
 }
 
 function getOtherText() {
