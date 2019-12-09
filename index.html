@@ -7,7 +7,7 @@
     <title>Document</title>
     <style>
       body {
-        min-width: 400px;
+        min-width: 448px;
         background-color: #f2f2f2;
       }
 
@@ -69,6 +69,13 @@
         box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
       }
 
+      .flex-between {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -98,8 +105,13 @@
     </div>
     <!-- <button type="button" id="get_html">Get Html</button> -->
     <!-- <button type="button" id="get_head_title" class="btn btn-warning">Get Head Title</button> -->
-    <div class="card">
-      <button type="button" class="btn" id="dump_text">Dump Text</button>
+    <div class="card flex-between">
+      <button type="button" class="btn" id="dump_text_training">
+        Dump Text Training
+      </button>
+      <button type="button" class="btn" id="dump_text_magic">
+        Dump Text Magic Map
+      </button>
     </div>
     <div class="card">
       <div id="text_content"></div>

@@ -6,16 +6,31 @@ $(function() {
     getHtml();
   });
 
-  $("#dump_text").click(function() {
-    dumpText();
+  $("#dump_text_training").click(function() {
+    dumpTextTraining();
+  });
+
+  $("#dump_text_magic").click(function() {
+    dumpTextMagic();
   });
 
   $(document).on("ready", function() {});
 });
 
-function dumpText() {
+function dumpTextTraining() {
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, "dumpText", null, function(text) {
+    chrome.tabs.sendMessage(tabs[0].id, "dumpTextTraining", null, function(
+      text
+    ) {
+      $("#text_content").html(text);
+      copyToClip(text);
+    });
+  });
+}
+
+function dumpTextMagic() {
+  chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, "dumpTextMagic", null, function(text) {
       $("#text_content").html(text);
       copyToClip(text);
     });

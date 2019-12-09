@@ -16,9 +16,15 @@ chrome.runtime.onMessage.addListener(function(cmd, sender, sendResponse) {
       // retrieve title HTML and send to popup.js
       sendResponse(document.getElementsByTagName("title")[0].innerHTML);
       break;
-    case "dumpText":
-      console.log("dumpText");
-      var text = dumpText();
+    case "dumpTextTraining":
+      console.log("dumpTextTraining");
+      var text = dumpTextTraining();
+      console.log(text);
+      sendResponse(text);
+      break;
+    case "dumpTextMagic":
+      console.log("dumpTextMagic");
+      var text = dumpTextMagic();
       console.log(text);
       sendResponse(text);
       break;
@@ -51,8 +57,8 @@ function markClass() {
   }
 }
 
-function dumpText() {
-  console.log("dumpText -> function");
+function dumpTextTraining() {
+  console.log("dumpTextTraining -> function");
   markClass();
 
   const ele = getElementsPerformanceCriteria();
@@ -67,6 +73,54 @@ function dumpText() {
     knowledge_evidence,
     assessment_conditions
   ].join("\r\n----------------------\r\n");
+}
+
+function markMagicClass() {
+  var blocks = document.querySelectorAll(".row.competency-wrapper");
+
+  for (let block of blocks) {
+    var row = block.querySelector(".element-title");
+    if (row) {
+      var text = row.outerText
+        .trim()
+        .replace(/\s+/g, "_")
+        .toLowerCase();
+      block.className = block.className + " " + text;
+    }
+  }
+}
+
+function dumpTextMagic() {
+  markMagicClass();
+
+  var eles = [];
+  var elements = document.querySelector(".row.competency-wrapper.element");
+  if (elements) {
+    var ele_rows = elements.querySelectorAll(".d-flex.w-100");
+    for (let ele of ele_rows) {
+      let first_col = ele.querySelector(".competency-first-column");
+      let level = first_col.querySelector("#level");
+      let content = first_col.querySelector("#content");
+      if (level && content) {
+        let ele_title = level.value + ". " + content.value;
+        eles.push(ele_title);
+      }
+
+      let second_col = ele.querySelector(".competency-second-column");
+      let second_col_rows = second_col.querySelectorAll(".competency-row");
+
+      for (let scrw of second_col_rows) {
+        let scrw_level = scrw.querySelector("#level");
+        let scrw_content = scrw.querySelector("#textRow");
+        if (scrw_level && scrw_content) {
+          let scrw_ele_title = scrw_level.value + ". " + scrw_content.value;
+          eles.push(scrw_ele_title);
+        }
+      }
+    }
+  }
+
+  return eles.join("\r\n");
 }
 
 function getElementsPerformanceCriteria() {
