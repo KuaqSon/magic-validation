@@ -27,8 +27,7 @@ chrome.runtime.onMessage.addListener(function(cmd, sender, sendResponse) {
   }
 });
 
-function dumpText() {
-  console.log("dumpText -> function");
+function markClass() {
   var h2 = document.getElementsByTagName("h2");
   for (let htem of h2) {
     var htext = htem.outerText
@@ -37,6 +36,24 @@ function dumpText() {
       .toLowerCase();
     htem.className = htext;
   }
+  var table = document.getElementsByClassName("ait-table");
+  for (let ttem of table) {
+    var trs = ttem.querySelectorAll("tr");
+    for (let trtem of trs) {
+      var trtext = trtem.outerText
+        .trim()
+        .replace(/\s+/g, "_")
+        .toLowerCase();
+      if (trtext.length < 100) {
+        trtem.className = trtext;
+      }
+    }
+  }
+}
+
+function dumpText() {
+  console.log("dumpText -> function");
+  markClass();
 
   const ele = getElementsPerformanceCriteria();
   const skill = getFoundationSkills();
@@ -77,6 +94,7 @@ function getElementsPerformanceCriteria() {
 function getFoundationSkills() {
   var skills = [];
   var foundation_skills = document.querySelector(".foundation_skills");
+  if (!foundation_skills) return "";
   var next = foundation_skills.nextElementSibling;
   while (
     next &&
@@ -115,13 +133,27 @@ function getFoundationSkills() {
 
 function getPerformanceEvidence() {
   var pers = getContentLevelType(".performance_evidence");
-  pers = ["PERFORMANCE EVIDENCE"].concat(pers);
+  pers = ["PERFORMANCE EVIDENCE (or Required Skills)"].concat(pers);
+
+  var required_skills = document.querySelector(".required_skills");
+  if (required_skills) {
+    var required_skills_text = required_skills.nextElementSibling;
+
+    pers.push(required_skills_text.outerText);
+  }
+
   return pers.join("\r\n");
 }
 
 function getKnowledgeEvidence() {
   var pers = getContentLevelType(".knowledge_evidence");
-  pers = ["KNOWLEDGE EVIDENCE"].concat(pers);
+  pers = ["KNOWLEDGE EVIDENCE (or Required Knowledge)"].concat(pers);
+  var required_knowledge = document.querySelector(".required_knowledge");
+  if (required_knowledge) {
+    var required_knowledge_text = required_knowledge.nextElementSibling;
+
+    pers.push(required_knowledge_text.outerText);
+  }
   return pers.join("\r\n");
 }
 
@@ -133,8 +165,9 @@ function getAssessmentConditions() {
 
 function getContentLevelType(selector) {
   var pers = [];
-  var performance_evidence = document.querySelector(selector);
-  var next = performance_evidence.nextElementSibling;
+  var content = document.querySelector(selector);
+  if (!content) return "";
+  var next = content.nextElementSibling;
   var level = 0;
   var levelDash = "";
   while (
