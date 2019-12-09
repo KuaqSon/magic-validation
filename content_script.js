@@ -87,13 +87,20 @@ function markMagicClass() {
         .toLowerCase();
       block.className = block.className + " " + text;
     }
+
+    var foundation_skills_btn = block.querySelector(
+      "button[class*=js_insert_foundation]"
+    );
+    if (foundation_skills_btn) {
+      block.className = block.className + " " + "foundation_skills";
+    }
   }
 }
 
 function dumpTextMagic() {
   markMagicClass();
 
-  var eles = [];
+  var eles = ["ELEMENTS AND PERFORMANCE CRITERIA"];
   var elements = document.querySelector(".row.competency-wrapper.element");
   if (elements) {
     var ele_rows = elements.querySelectorAll(".d-flex.w-100");
@@ -117,6 +124,98 @@ function dumpTextMagic() {
           eles.push(scrw_ele_title);
         }
       }
+    }
+  }
+
+  var foundation_skills = document.querySelector(
+    ".row.competency-wrapper.foundation_skills"
+  );
+  eles.push("\r\n----------------------\r\n");
+  eles.push("FOUNDATION SKILLS");
+  if (foundation_skills) {
+    var ele_rows = foundation_skills.querySelectorAll(".d-flex.w-100");
+    for (let ele of ele_rows) {
+      let first_col = ele.querySelector(".competency-first-column");
+      let skill = first_col.querySelector("#skill");
+      if (skill) {
+        eles.push(skill.value);
+      }
+
+      let second_col = ele.querySelector(".competency-second-column");
+      let second_col_rows = second_col.querySelectorAll(".competency-row");
+
+      for (let scrw of second_col_rows) {
+        let scrw_content = scrw.querySelector("#textRow");
+        if (scrw_content) {
+          eles.push(scrw_content.value);
+        }
+      }
+    }
+  }
+
+  var performance_evidence = document.querySelector(
+    ".row.competency-wrapper.performance_evidence"
+  );
+  eles.push("\r\n----------------------\r\n");
+  eles.push("PERFORMANCE EVIDENCE (or Required Skills)");
+  if (performance_evidence) {
+    let second_col = performance_evidence.querySelector(
+      ".competency-second-column"
+    );
+    let per_rows = second_col.querySelectorAll(".competency-row");
+    for (let per_row of per_rows) {
+      let level = Number(
+        per_row.className.replace("competency-row d-inline-flex level-", "") ||
+          "0"
+      );
+      let content =
+        "-".repeat(Math.max(level - 1, 0)) +
+        per_row.querySelector("#textRow").value;
+      eles.push(content);
+    }
+  }
+
+  var knowledge_evidence = document.querySelector(
+    ".row.competency-wrapper.knowledge_evidence"
+  );
+  eles.push("\r\n----------------------\r\n");
+  eles.push("KNOWLEDGE EVIDENCE (or Required Knowledge)");
+  if (knowledge_evidence) {
+    let second_col = knowledge_evidence.querySelector(
+      ".competency-second-column"
+    );
+    let per_rows = second_col.querySelectorAll(".competency-row");
+    for (let per_row of per_rows) {
+      let level = Number(
+        per_row.className.replace("competency-row d-inline-flex level-", "") ||
+          "0"
+      );
+      let content =
+        "-".repeat(Math.max(level - 1, 0)) +
+        per_row.querySelector("#textRow").value;
+      eles.push(content);
+    }
+  }
+
+  var assessment_conditions = document.querySelector(
+    ".row.competency-wrapper.assessment_conditions"
+  );
+  eles.push("\r\n----------------------\r\n");
+  eles.push("ASSESSMENT CONDITIONS (or Critical Aspects of Evidence )");
+  if (assessment_conditions) {
+    let second_col = assessment_conditions.querySelector(
+      ".competency-second-column"
+    );
+    let per_rows = second_col.querySelectorAll(".competency-row");
+    for (let per_row of per_rows) {
+      let level = Number(
+        per_row.className.replace("competency-row d-inline-flex level-", "") ||
+          "0"
+      );
+      let content =
+        "-".repeat(Math.max(level - 1, 0)) +
+        per_row.querySelector("#textRow").value;
+      eles.push(content);
     }
   }
 
@@ -213,7 +312,9 @@ function getKnowledgeEvidence() {
 
 function getAssessmentConditions() {
   var pers = getContentLevelType(".assessment_conditions");
-  pers = ["ASSESSMENT CONDITIONS"].concat(pers);
+  pers = ["ASSESSMENT CONDITIONS (or Critical Aspects of Evidence )"].concat(
+    pers
+  );
   return pers.join("\r\n");
 }
 
